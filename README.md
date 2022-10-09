@@ -3,7 +3,7 @@
 Derived from [xirixiz/dsmr-reader-docker](https://github.com/xirixiz/dsmr-reader-docker), this repo was created
 to simplify docker compose v2 setup.
 
-This setup is tested with Raspberry Pi 3 Model B, using the Raspberry Pi OS Lite (32-bit) image (no desktop environment).
+This setup is tested with Raspberry Pi 3 Model B (fresh install), using the Raspberry Pi OS Lite (32-bit) image (no desktop environment).
 
 ## How to use
 
@@ -25,6 +25,7 @@ echo \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
+sudo usermod -aG docker $USER
 ```
 
 > Note: We are using `/linux/raspbian` here for our Raspberry Pi 3 Model B.
@@ -54,7 +55,7 @@ Copy `.env.example` to `.env` and edit the values where needed.
 You can up the stack now.
 
 ```shell
-docker compose up -d && docker compose run wait
+docker compose up -d
 ```
 
 You should now be able to visit the dashboard at `http://xxx.xxx.xxx.x:7777`.

@@ -1,13 +1,22 @@
 version: '3.9'
 
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "25m"
+    max-file: "5"
+
 services:
   dsmr:
     image: xirixiz/dsmr-reader-docker:${DSMR_READER_IMAGE_VERSION}
+    logging: *default-logging
     restart: always
     cap_add:
       - NET_ADMIN
     depends_on:
       - postgres
+    healthcheck:
+      disable: true
     ports:
       - "7777:80"
     devices:
@@ -29,6 +38,8 @@ services:
       DJANGO_SECRET_KEY: ${DSMRREADER_DJANGO_SECRET_KEY}
     volumes:
       - $HOME/db-backup/postgres/dsmr:/app/backups
+    networks:
+      - dsmr
 
   postgres:
     image: postgres:${POSTGRES_IMAGE_VERSION}
@@ -86,14 +97,6 @@ services:
       EXTRA_S3_ENDPOINT_URL: ${DB_BACKUP_EXTRA_S3_ENDPOINT_URL:-""}
     volumes:
       - $HOME/db-backup/postgres/dsmr:/db
-    networks:
-      - dsmr
-
-  wait:
-    image: waisbrot/wait
-    environment:
-      TARGETS: postgres:5432 dsmr:7777
-      TIMEOUT: 60
     networks:
       - dsmr
 
