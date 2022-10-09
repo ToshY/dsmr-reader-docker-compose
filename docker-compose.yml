@@ -1,0 +1,106 @@
+version: '3.9'
+
+services:
+  dsmr:
+    image: xirixiz/dsmr-reader-docker:${DSMR_READER_IMAGE_VERSION}
+    restart: always
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      - postgres
+    ports:
+      - "7777:80"
+    devices:
+      - /dev/ttyUSB1:/dev/ttyUSB0
+    environment:
+      TZ: ${DSMRREADER_TZ}
+      DJANGO_TIME_ZONE: ${DSMRREADER_DJANGO_TIME_ZONE}
+      VIRTUAL_HOST: ${DSMRREADER_VITUAL_HOST}
+      DSMRREADER_ADMIN_USER: ${DSMRREADER_ADMIN_USER}
+      DSMRREADER_ADMIN_PASSWORD: ${DSMRREADER_ADMIN_PASSWORD}
+      DSMRREADER_LOGLEVEL: ${DSMRREADER_LOGLEVEL}
+      DJANGO_DATABASE_ENGINE: ${DSMRREADER_DJANGO_DATABASE_ENGINE}
+      DJANGO_DATABASE_HOST: ${DSMRREADER_DJANGO_DATABASE_HOST}
+      DJANGO_DATABASE_PORT: ${DSMRREADER_DJANGO_DATABASE_PORT}
+      DJANGO_DATABASE_NAME: ${DSMRREADER_DJANGO_DATABASE_NAME}
+      DJANGO_DATABASE_USER: ${DSMRREADER_DJANGO_DATABASE_USER}
+      DJANGO_DATABASE_PASSWORD: ${DSMRREADER_DJANGO_DATABASE_PASSWORD}
+      DJANGO_DATABASE_CONN_MAX_AGE: ${DSMRREADER_DJANGO_DATABASE_CONN_MAX_AGE}
+      DJANGO_SECRET_KEY: ${DSMRREADER_DJANGO_SECRET_KEY}
+    volumes:
+      - $HOME/db-backup/postgres/dsmr:/app/backups
+
+  postgres:
+    image: postgres:${POSTGRES_IMAGE_VERSION}
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - $HOME/db-init/postgres/dsmr:/docker-entrypoint-initdb.d
+    networks:
+      - dsmr
+
+  postgres-backup:
+    build:
+      context: docker/db-backup
+      dockerfile: Dockerfile
+      args:
+        DB_BACKUP_IMAGE_VERSION: ${DB_BACKUP_IMAGE_VERSION}
+        DISCORD_SH_VERSION: ${DISCORD_SH_VERSION}
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      DEBUG_MODE: ${DB_BACKUP_DEBUG_MODE:-FALSE}
+      CONTAINER_ENABLE_MONITORING: 'false'
+      DB_TYPE: ${DB_BACKUP_DB_TYPE}
+      DB_HOST: ${DB_BACKUP_DB_HOST}
+      DB_PORT: ${DB_BACKUP_DB_PORT}
+      DB_USER: ${DB_BACKUP_DB_USER}
+      DB_PASS: ${DB_BACKUP_DB_PASS}
+      BACKUP_LOCATION: ${DB_BACKUP_BACKUP_LOCATION:-FILESYSTEM}
+      DB_DUMP_BEGIN: ${DB_BACKUP_DB_DUMP_BEGIN:-"0230"}
+      DB_DUMP_FREQ: ${DB_BACKUP_DB_DUMP_FREQ:-"1440"}
+      DB_DUMP_TARGET: ${DB_BACKUP_DB_DUMP_TARGET:-'/db'}
+      DB_NAME: ${DB_BACKUP_DB_NAME:-"ALL"}
+      DB_NAME_EXCLUDE: ${DB_BACKUP_DB_NAME_EXCLUDE:-""}
+      SPLIT_DB: ${DB_BACKUP_SPLIT_DB:-TRUE}
+      EXTRA_OPTS: ${DB_BACKUP_EXTRA_OPTS:-""}
+      COMPRESSION: ${DB_BACKUP_COMPRESSION:-GZ}
+      COMPRESSION_LEVEL: ${DB_BACKUP_COMPRESSION_LEVEL:-3}
+      ENABLE_PARALLEL_COMPRESSION: ${DB_BACKUP_ENABLE_PARALLEL_COMPRESSION:-TRUE}
+      # Custom env vars for Discord.sh
+      SEND_NOTIFICATION: ${DB_BACKUP_SEND_NOTIFICATION:-false}
+      DISCORD_WEBHOOK: ${DB_BACKUP_DISCORD_WEBHOOK:-""}
+      DISCORD_MESSAGE_TITLE: ${DB_BACKUP_DISCORD_MESSAGE_TITLE:-"Database backup created"}
+      DISCORD_MESSAGE_DESCRIPTION: ${DB_BACKUP_DISCORD_MESSAGE_DESCRIPTION:-"DSMR"}
+      DISCORD_MESSAGE_HEX_COLOR: ${DB_BACKUP_DISCORD_MESSAGE_HEX_COLOR:-"C7053D"}
+      # Custom env vars for extra S3 sync
+      SYNC_S3: ${DB_BACKUP_SYNC_S3:-false}
+      AWS_ACCESS_KEY_ID: ${DB_BACKUP_AWS_KEY:-""}
+      AWS_SECRET_ACCESS_KEY: ${DB_BACKUP_AWS_SECRET:-""}
+      EXTRA_S3_BUCKET: ${DB_BACKUP_EXTRA_S3_BUCKET:-""}
+      EXTRA_S3_ENDPOINT_URL: ${DB_BACKUP_EXTRA_S3_ENDPOINT_URL:-""}
+    volumes:
+      - $HOME/db-backup/postgres/dsmr:/db
+    networks:
+      - dsmr
+
+  wait:
+    image: waisbrot/wait
+    environment:
+      TARGETS: postgres:5432 dsmr:7777
+      TIMEOUT: 60
+    networks:
+      - dsmr
+
+volumes:
+  postgres:
+    driver: local
+
+networks:
+  dsmr:
+    driver: bridge
