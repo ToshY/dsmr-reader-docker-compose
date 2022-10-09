@@ -11,7 +11,7 @@ services:
     ports:
       - "7777:80"
     devices:
-      - /dev/ttyUSB1:/dev/ttyUSB0
+      - /dev/ttyUSB0:/dev/ttyUSB0
     environment:
       TZ: ${DSMRREADER_TZ}
       DJANGO_TIME_ZONE: ${DSMRREADER_DJANGO_TIME_ZONE}
