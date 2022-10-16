@@ -1,19 +1,33 @@
 # DSMR-reader - Docker Compose
 
-Derived from [xirixiz/dsmr-reader-docker](https://github.com/xirixiz/dsmr-reader-docker), this repo was created
+Derived from [xirixiz/dsmr-reader-docker](https://github.com/xirixiz/dsmr-reader-docker), this repository was created
 to simplify docker compose v2 setup.
 
-This setup is tested with Raspberry Pi 3 Model B (fresh install), using the Raspberry Pi OS Lite (32-bit) image (no desktop environment).
+This setup is tested with a fresh installation of a Raspberry Pi 3 Model B, using the Raspberry Pi OS Lite (32-bit)
+image (no
+desktop environment).
 
-## How to use
+## 🧰 How to use
 
-### Prerequisites
+### 📦 Images
+
+- [DSMR-reader - Docker](https://github.com/xirixiz/dsmr-reader-docker) » xirixiz/dsmr-reader-docker:
+  arm32v7-5.8.0-2022.09.02
+- [PostgreSQL](https://hub.docker.com/_/postgres) » postgres:14-alpine
+- [Database backup](https://registry.hub.docker.com/r/kartoza/pg-backup) » tiredofit/db-backup:3.4.1
+    - [Customised Dockerfile](./docker/db-backup/Dockerfile) with post webhook script
+      including [rotate-backups](https://pypi.org/project/rotate-backups/), [discord.sh](https://github.com/ChaoticWeg/discord.sh) for notifications (optional) and AWS S3 sync (optional).
+
+### ‼ Prerequisites
 
 This requires installation of docker and docker compose on the device. Either follow installation guide
 from [Docker](https://docs.docker.com/desktop/install/linux-install/) or use
 the guide below.
 
-#### Docker
+<details>
+  <summary>🐋 Docker</summary>
+
+Setup docker using the following commands.
 
 ```shell
 sudo apt-get update
@@ -28,13 +42,17 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io
 sudo usermod -aG docker $USER
 ```
 
-> Note: We are using `/linux/raspbian` here for our Raspberry Pi 3 Model B.
+> Note: We are using `linux/raspbian` for a Raspberry Pi 3 Model B.
 
 > Note: We are going to install the docker compose plugin separately as history has shown
 > that [releases of docker compose
 > generally depend on releases of Docker CLI](https://github.com/docker/compose/issues/9657#issuecomment-1200318451).
 
-#### Docker Compose
+</details>
+<details>
+  <summary>🐳 Docker Compose</summary>
+
+Setup docker compose using the following commands.
 
 ```shell
 DOCKER_COMPOSE_VERSION=v2.11.2
@@ -45,17 +63,26 @@ chmod +x ~/.docker/cli-plugins/docker-compose
 
 > Note: We are using `docker-compose-linux-armv7` here for our Raspberry Pi 3 Model B. You can check this
 > with `uname -a`.
+</details>
 
-## Prepare environment variables
+## 📝 Setup
 
-Copy `.env.example` to `.env` and edit the values where needed.
-
-## Run
-
-You can up the stack now.
-
-```shell
-docker compose up -d
-```
+1. Clone/download this repository.
+2. Copy the `.env.example` to `.env` and edit the values where needed.
+    * For security reasons please change at least the following variables:
+        * `POSTGRES_PASSWORD`
+        * `DSMRREADER_ADMIN_PASSWORD`
+3. By default, the devices mounted to the DSMR service in the docker compose config is set to `/dev/ttyUSB0`. If
+   this differs on your device, please change this before continuing.
+    * If you are not sure which `ttyUSB` it is, you can easily check this by plugging in the P1 cable into your
+      Raspberry Pi and see which `ttyUSB` was added in the `/dev` directory (`ls /dev/tty*`).
+4. Up the stack.
+   ```
+   docker compose up -d
+   ```
 
 You should now be able to visit the dashboard at `http://xxx.xxx.xxx.x:7777`.
+
+## ❕️ License
+
+Distributed under the MIT License. See [LICENSE](./LICENSE) for more information.
