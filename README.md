@@ -14,7 +14,7 @@ desktop environment).
 - [DSMR-reader - Docker](https://github.com/xirixiz/dsmr-reader-docker) » xirixiz/dsmr-reader-docker:
   arm32v7-5.8.0-2022.09.02
 - [PostgreSQL](https://hub.docker.com/_/postgres) » postgres:14-alpine
-- [Database backup](https://registry.hub.docker.com/r/kartoza/pg-backup) » tiredofit/db-backup:3.4.1
+- [Database backup](https://hub.docker.com/r/tiredofit/db-backup) » tiredofit/db-backup:3.4.1
     - [Customised Dockerfile](./docker/db-backup/Dockerfile) with post webhook script
       including [rotate-backups](https://pypi.org/project/rotate-backups/), [discord.sh](https://github.com/ChaoticWeg/discord.sh) for notifications (optional) and AWS S3 sync (optional).
 
