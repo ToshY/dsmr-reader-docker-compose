@@ -100,7 +100,7 @@ services:
       EXTRA_S3_BUCKET: ${DB_BACKUP_EXTRA_S3_BUCKET:-""}
       EXTRA_S3_ENDPOINT_URL: ${DB_BACKUP_EXTRA_S3_ENDPOINT_URL:-""}
     volumes:
-      - $HOME/db-backup/postgres/dsmr:/db
+      - $HOME/db-backup/postgres:/db
     networks:
       - dsmr
 
