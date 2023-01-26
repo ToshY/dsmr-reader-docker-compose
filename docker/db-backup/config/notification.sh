@@ -30,8 +30,8 @@ fi
 
 # Sync AWS if applicable
 if [ "${SYNC_S3}" = true ]; then
-  echo "Syncing AWS backups to target bucket: 'aws s3 sync $DB_SPECIFIC_DIRECTORY ${EXTRA_S3_BUCKET} --endpoint-url ${EXTRA_S3_ENDPOINT_URL} --delete.'"
-  /usr/local/bin/aws s3 sync $DB_SPECIFIC_DIRECTORY ${EXTRA_S3_BUCKET} --endpoint-url ${EXTRA_S3_ENDPOINT_URL} --delete
+  echo "Syncing AWS backups to target bucket: 'aws s3 sync $DB_SPECIFIC_DIRECTORY ${EXTRA_S3_BUCKET}/${4} --endpoint-url ${EXTRA_S3_ENDPOINT_URL} --delete.'"
+  /usr/bin/aws s3 sync $DB_SPECIFIC_DIRECTORY ${EXTRA_S3_BUCKET}/${4} --endpoint-url ${EXTRA_S3_ENDPOINT_URL} --delete
 fi
 
 # Send notification if applicable
