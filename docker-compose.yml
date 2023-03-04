@@ -16,7 +16,20 @@ services:
     depends_on:
       - postgres
     healthcheck:
-      disable: true
+      test:
+        [
+          "CMD",
+          "curl",
+          "-Lsf",
+          "http://127.0.0.1/about",
+          "-o",
+          "/dev/null",
+          "-w",
+          "HTTP_%{http_code}"
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 10
     ports:
       - "7777:80"
     devices:
