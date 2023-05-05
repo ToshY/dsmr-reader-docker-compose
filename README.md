@@ -54,7 +54,7 @@ sudo usermod -aG docker $USER
 Setup docker compose using the following commands.
 
 ```shell
-DOCKER_COMPOSE_VERSION=v2.11.2
+DOCKER_COMPOSE_VERSION=v2.17.3
 mkdir -p ~/.docker/cli-plugins
 curl -SL https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-linux-armv7 -o ~/.docker/cli-plugins/docker-compose
 chmod +x ~/.docker/cli-plugins/docker-compose

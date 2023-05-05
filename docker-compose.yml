@@ -3,7 +3,7 @@ version: '3.9'
 x-logging: &default-logging
   driver: json-file
   options:
-    max-size: "25m"
+    max-size: "50m"
     max-file: "3"
 
 services:
@@ -14,7 +14,8 @@ services:
     cap_add:
       - NET_ADMIN
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     healthcheck:
       test:
         [
@@ -53,15 +54,24 @@ services:
       DJANGO_DATABASE_PASSWORD: ${DSMRREADER_DJANGO_DATABASE_PASSWORD}
       DJANGO_DATABASE_CONN_MAX_AGE: ${DSMRREADER_DJANGO_DATABASE_CONN_MAX_AGE}
       DJANGO_SECRET_KEY: ${DSMRREADER_DJANGO_SECRET_KEY}
-    volumes:
-      - $HOME/db-backup/postgres:/app/backups
     networks:
       - dsmr
 
   postgres:
     image: postgres:${POSTGRES_IMAGE_VERSION}
+    logging: *default-logging
     restart: always
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"
+      ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     environment:
+      TZ: ${DSMRREADER_TZ}
+      PG_TZ: ${DSMRREADER_TZ}
       POSTGRES_DB: ${POSTGRES_DATABASE}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -78,9 +88,11 @@ services:
       args:
         DB_BACKUP_IMAGE_VERSION: ${DB_BACKUP_IMAGE_VERSION}
         DISCORD_SH_VERSION: ${DISCORD_SH_VERSION}
+    logging: *default-logging
     restart: on-failure
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       DEBUG_MODE: ${DB_BACKUP_DEBUG_MODE:-FALSE}
       CONTAINER_ENABLE_MONITORING: 'false'
