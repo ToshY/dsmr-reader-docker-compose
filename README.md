@@ -82,6 +82,16 @@ chmod +x ~/.docker/cli-plugins/docker-compose
 
 You should now be able to visit the dashboard at `http://xxx.xxx.xxx.x:7777`.
 
+### Database
+
+#### Restore
+
+You can restore database backups with the interactive `restore` script.
+
+```shell
+docker compose exec -it postgres-backup restore
+```
+
 ## ❕️ License
 
 Distributed under the MIT License. See [LICENSE](./LICENSE) for more information.
