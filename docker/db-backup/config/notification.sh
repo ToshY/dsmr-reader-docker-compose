@@ -15,7 +15,7 @@
 DB_CURRENT_FILE=${DB_DUMP_TARGET}/${8}
 DB_SPECIFIC_DIRECTORY=${DB_DUMP_TARGET}/${4}
 if [ ! -d "$DB_SPECIFIC_DIRECTORY" ]; then
-  echo "creating directory: $DB_SPECIFIC_DIRECTORY"
+  echo "Creating directory: $DB_SPECIFIC_DIRECTORY"
   mkdir -p "$DB_SPECIFIC_DIRECTORY"
 fi
 
