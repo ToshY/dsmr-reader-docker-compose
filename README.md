@@ -26,16 +26,19 @@ This requires installation of Docker and Docker Compose on the device. See the
 
 1. Clone/download this repository.
 2. Copy the `.env.example` to `.env` and edit the values where needed.
-    * For security reasons please change at least the following variables:
-        * `POSTGRES_PASSWORD`
-        * `DSMRREADER_ADMIN_PASSWORD`
+    ```shell
+    make dotenv
+    ```
+    > For security reasons please change at least the following variables:
+    >   * `POSTGRES_PASSWORD`
+    >   * `DSMRREADER_ADMIN_PASSWORD`
 3. By default, the devices mounted to the DSMR service in the docker compose config is set to `/dev/ttyUSB0`. If
    this differs on your device, please change this before continuing.
     * If you are not sure which `ttyUSB` it is, you can easily check this by plugging in the P1 cable into your
       Raspberry Pi and see which `ttyUSB` was added in the `/dev` directory (`ls /dev/tty*`).
 4. Up the stack.
-   ```
-   docker compose up -d
+   ```shell
+   make up
    ```
 
 You should now be able to visit the dashboard at `http://xxx.xxx.xxx.x:7777`.
