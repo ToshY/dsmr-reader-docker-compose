@@ -4,10 +4,10 @@ help:
 dotenv: ## Copy .env.example to .env
 	rsync -q --ignore-existing ./.env.example ./.env
 
-up: ## Down docker services
+up: ## Up docker services
 	docker compose up -d --build --force-recreate --pull always --wait --wait-timeout 150
 
-down: ## Up docker services
+down: ## Down docker services
 	docker compose down --remove-orphans
 
 logs: ## Show docker logs
