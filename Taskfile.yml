@@ -1,0 +1,71 @@
+version: '3'
+
+env:
+  UID:
+    sh: id -u
+  GID:
+    sh: id -g
+  TTY: ''
+
+tasks:
+  default:
+    cmds:
+      - task --list
+
+  init:
+    desc: Initialisation dotenv
+    cmds:
+      - |
+        rsync -q --ignore-missing-args --ignore-existing $(pwd)/.env.example $(pwd)/.env
+
+  shell:
+    desc: Login the container
+    vars:
+      CONTAINER: '{{.c | default "dsmr"}}'
+    cmds:
+      - docker compose exec $TTY {{.CONTAINER}} {{.CLI_ARGS | default "/bin/bash"}}
+
+  up:
+    desc: Up services
+    cmds:
+      - docker compose up {{.CLI_ARGS}} -d --build --force-recreate --remove-orphans --pull always
+
+  down:
+    desc: Down services
+    cmds:
+      - docker compose down --remove-orphans {{.CLI_ARGS}}
+
+  start:
+    desc: Start services
+    cmds:
+      - docker compose start {{.CLI_ARGS}}
+
+  stop:
+    desc: Stop services
+    cmds:
+      - docker compose stop {{.CLI_ARGS}}
+
+  pause:
+    desc: Pause services
+    cmds:
+      - docker compose pause {{.CLI_ARGS}}
+
+  unpause:
+    desc: Unpause services
+    cmds:
+      - docker compose unpause {{.CLI_ARGS}}
+
+  pull:
+    desc: Pull latest images
+    cmds:
+      - docker compose pull {{.CLI_ARGS}}
+
+  recreate:
+    desc: Force recreate
+    cmds:
+      - docker compose up {{.CLI_ARGS}} -d --build --force-recreate --remove-orphans
+
+  logs:
+    desc: Show logs
+    cmds:
+      - docker compose logs -ft {{.CLI_ARGS}}

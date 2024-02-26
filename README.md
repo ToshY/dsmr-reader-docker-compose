@@ -11,8 +11,8 @@ desktop environment).
 
 ### ‼️ Prerequisites
 
-This requires installation of Docker and Docker Compose on the device. See the
-"[Install Docker Engine on Raspberry Pi OS](https://docs.docker.com/engine/install/raspberry-pi-os/)" guide to get started.
+* [Docker (Compose) Raspberry Pi OS](https://docs.docker.com/engine/install/raspberry-pi-os/)
+* [Task (3.15+)](https://taskfile.dev/installation/) (optional, but recommended)
 
 ### 📦 Images
 
@@ -27,7 +27,7 @@ This requires installation of Docker and Docker Compose on the device. See the
 1. Clone/download this repository.
 2. Copy the `.env.example` to `.env` and edit the values where needed.
     ```shell
-    make dotenv
+    task dotenv
     ```
     > For security reasons please change at least the following variables:
     >   * `POSTGRES_PASSWORD`
@@ -38,7 +38,7 @@ This requires installation of Docker and Docker Compose on the device. See the
       Raspberry Pi and see which `ttyUSB` was added in the `/dev` directory (`ls /dev/tty*`).
 4. Up the stack.
    ```shell
-   make up
+   task up
    ```
 
 You should now be able to visit the dashboard at `http://xxx.xxx.xxx.x:7777`.

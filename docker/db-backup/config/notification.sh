@@ -4,7 +4,7 @@
 # #### $1=EXIT_CODE (After running backup routine)
 # #### $2=DB_TYPE (Type of Backup)
 # #### $3=DB_HOST (Backup Host)
-# #### #4=DB_NAME (Name of Database backed up
+# #### $4=DB_NAME (Name of Database backed up)
 # #### $5=BACKUP START TIME (Seconds since Epoch)
 # #### $6=BACKUP FINISH TIME (Seconds since Epoch)
 # #### $7=BACKUP TOTAL TIME (Seconds between Start and Finish)
@@ -12,8 +12,8 @@
 # #### $9=BACKUP FILESIZE
 # #### $10=HASH (If CHECKSUM enabled)
 
-DB_CURRENT_FILE=${DB_DUMP_TARGET}/${8}
-DB_SPECIFIC_DIRECTORY=${DB_DUMP_TARGET}/${4}
+DB_CURRENT_FILE=${DEFAULT_FILESYSTEM_PATH}/${8}
+DB_SPECIFIC_DIRECTORY=${DEFAULT_FILESYSTEM_PATH}/${4}
 if [ ! -d "$DB_SPECIFIC_DIRECTORY" ]; then
   echo "Creating directory: $DB_SPECIFIC_DIRECTORY"
   mkdir -p "$DB_SPECIFIC_DIRECTORY"
@@ -23,6 +23,11 @@ fi
 if [ -f "$DB_CURRENT_FILE" ]; then
   echo "Moving backup file from '$DB_CURRENT_FILE' to '$DB_SPECIFIC_DIRECTORY/${8}'."
   mv $DB_CURRENT_FILE $DB_SPECIFIC_DIRECTORY/${8}
+
+  if [ -z "${DEFAULT_CREATE_LATEST_SYMLINK}" ] || [ "${DEFAULT_CREATE_LATEST_SYMLINK,,}" = "true" ]; then
+    echo "Fixing latest symlink from '${4}/${8}' to '${DEFAULT_FILESYSTEM_PATH}/latest-${2}_${4}_${3}'"
+    ln -sf ${4}/${8} ${DEFAULT_FILESYSTEM_PATH}/latest-${2}_${4}_${3}
+  fi
 fi
 
 # Rotate backups
