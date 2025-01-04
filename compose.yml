@@ -6,7 +6,7 @@ x-logging: &default-logging
 
 services:
   dsmr:
-    image: xirixiz/dsmr-reader-docker:${DSMR_READER_IMAGE_VERSION}
+    image: ghcr.io/xirixiz/dsmr-reader-docker:${DSMR_READER_IMAGE_VERSION}
     logging: *default-logging
     restart: always
     cap_add:
